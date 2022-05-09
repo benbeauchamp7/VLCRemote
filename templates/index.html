@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <head>
+    <script type="text/javascript" src="/static/jquery-3.6.0.min.js"></script>
+    <script src="https://kit.fontawesome.com/c5132cb844.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/static/stylesheet.css">
+    <script type=text/javascript src="/static/index.js"></script>
+  </head>
+  
+  <body>
+    <form>
+      <div class="container">
+        <div id="settings-modal" class="modal">
+          <div class="modal-content">
+            <div class="row">
+              <select id="audio-select" class="flex-inline">
+                <option value="default">Default Audio</option>
+              </select>
+              <select id="sub-select" class="flex-inline">
+                <option value="default">Default Subtitles</option>
+              </select>
+              <button id="submit-modal" class="btn" style="width: auto; font-size: 30px;">Update</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="row" style="align-items: center;">
+          <h1 id="header" class="flex-inline" style="text-align: left; height: auto;">Not Playing</h1>
+          <i id="settings-ico" class="fas fa-cog fa-3x"></i>
+        </div>
+        <div class="header">
+          <div class="row">
+            <input id="backward-amt" class="flex-inline" type="number" min="0" max="300" value="10">
+            <input id="forward-amt" class="flex-inline" type="number" min="0" max="300" value="80">
+          </div>
+          <div class="row">
+            <a id=backward class="back-btn control">
+              <button name="backward" class="flex-inline">
+                <i class="fas fa-fast-backward fa-6x"></i>
+              </button>
+            </a>
+            <a id=playback class="playback-btn control margins">
+              <button name="playback" class="flex-inline">
+                <i class="fas fa-pause fa-6x"></i>
+              </button>
+            </a>
+            <a id=forward class="fwd-btn control">
+              <button name="forward" class="flex-inline">
+                <i class="fas fa-fast-forward fa-6x"></i>
+              </button>
+            </a>
+          </div>
+          <div class="row">
+            <span class="time">00:00</span>
+            <div class="slidecontainer">
+              <input type="range" min="0" max="100000" value="0" class="slider flex-inline" id="range">
+            </div>
+          </div>
+          <div class="row" style="display: none;">
+            <a id=file-a class="fwd-btn flex">
+              <button name="file-btn" class="flex-inline">
+                <h1 id="file-header" style="font-size: 24px;">Files</h1>
+              </button>
+            </a>
+            <a id=queue-a class="fwd-btn flex">
+              <button name="queue-btn" class="flex-inline">
+                <h1 id="queue-header" style="font-size: 24px;">Queue</h1>
+              </button>
+            </a>
+          </div>
+        </div>
+        <div class="scrollable" id="mid">
+          <div class="row" style="flex-direction: column;">
+            <table id='filesystem'>
+            </table>
+          </div>
+        </div>
+        <div class="row flex"></div>
+      </div>
+    </form>
+  </body>
+</html>
