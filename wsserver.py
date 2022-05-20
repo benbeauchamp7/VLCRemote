@@ -85,8 +85,5 @@ async def main():
         await asyncio.Future()  # run forever
 
 if __name__ == "__main__":
-    sub = subprocess.Popen(['python3', 'httpserver.py']);
-    try:
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        sub.terminate()
+    # sub = subprocess.Popen(['python3', 'httpserver.py']);
+    asyncio.run(main())

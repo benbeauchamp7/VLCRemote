@@ -42,59 +42,80 @@ let sock = null;
 let data = {};
 $(() => {
 	let slider = document.getElementById('range');
-	sock = new WebSocket("ws://nas.local:8901/");
-	sock.onopen = () => {
-		sock.send(`files_in:${path}`)
-		sock.send(`tracks`)
-	}
 
-	sock.onmessage = (msg) => {
-		const resp = JSON.parse(msg.data);
-		if (JSON.stringify(data) === msg.data) return;
-		data = resp;
-		const { type } = resp;
-
-		if (type === "vlc") {
-			const { title, length, time, playing } = resp;
-
-			// TITLE
-			if (title) $('h1#header').html(`Playing: ${title}`);
-
-			// SLIDER
-			if (length) slider.max = resp.length;
-			if (time) {
-				slider.value = resp.time;
-				$('span.time').html(parseTime(resp.time));
+	connect = () => {
+		if (sock !== null) {
+			sock.close();
+			sock = null;
+		}
+		sock = new WebSocket("ws://nas.local:8901/");
+	
+		sock.onclose = () => {
+			$('span#time').removeClass('black')
+			$('span#time').addClass('red')
+			sock = null;
+		}
+	
+		sock.onopen = () => {
+			$('span#time').removeClass('red')
+			$('span#time').addClass('black')
+			sock.send(`files_in:${path}`)
+			sock.send(`tracks`)
+		}
+	
+		sock.onmessage = (msg) => {
+			const resp = JSON.parse(msg.data);
+			if (JSON.stringify(data) === msg.data) return;
+			data = resp;
+			const { type } = resp;
+	
+			if (type === "vlc") {
+				const { title, length, time, playing } = resp;
+	
+				// TITLE
+				if (title) $('h1#header').html(`Playing: ${title}`);
+	
+				// SLIDER
+				if (length) slider.max = resp.length;
+				if (time) {
+					slider.value = resp.time;
+					$('span.time').html(parseTime(resp.time));
+				}
+	
+				// PLAY BUTTON
+				if (playing) {
+					$('a#playback').html('<button name="playback" class="flex-inline"><i class="fas fa-pause fa-6x"></i></button>')
+					$('a#playback').removeClass('paused')
+				} else {
+					$('a#playback').html('<button name="playback" class="flex-inline"><i class="fas fa-play fa-6x"></i></button>')
+					$('a#playback').addClass('paused')
+				}
+			} else if (type === "fs") {
+				const { f_dir, f_resp } = resp;
+				genFileList(f_resp);
+			} else if (type === "tracks") {
+				const subs = new Map(JSON.parse(resp.subs))
+				const audio = new Map(JSON.parse(resp.audio))
+	
+				let html = `<option value="default">Default Subtitles</option>`
+				subs.forEach((v, k) => {
+					html += `<option value="${k}">${v}</option>`
+				})
+				$("select#sub-select").html(html)
+	
+				html = `<option value="default">Default Audio</option>`
+				audio.forEach((v, k) => {
+					html += `<option value="${k}">${v}</option>`
+				})
+				$("select#audio-select").html(html)
 			}
-
-			// PLAY BUTTON
-			if (playing) {
-				$('a#playback').html('<button name="playback" class="flex-inline"><i class="fas fa-pause fa-6x"></i></button>')
-				$('a#playback').removeClass('paused')
-			} else {
-				$('a#playback').html('<button name="playback" class="flex-inline"><i class="fas fa-play fa-6x"></i></button>')
-				$('a#playback').addClass('paused')
-			}
-		} else if (type === "fs") {
-			const { f_dir, f_resp } = resp;
-			genFileList(f_resp);
-		} else if (type === "tracks") {
-			const subs = new Map(JSON.parse(resp.subs))
-			const audio = new Map(JSON.parse(resp.audio))
-
-			let html = `<option value="default">Default Subtitles</option>`
-			subs.forEach((v, k) => {
-				html += `<option value="${k}">${v}</option>`
-			})
-			$("select#sub-select").html(html)
-
-			html = `<option value="default">Default Audio</option>`
-			audio.forEach((v, k) => {
-				html += `<option value="${k}">${v}</option>`
-			})
-			$("select#audio-select").html(html)
 		}
 	}
+
+	connect();
+
+	// REFRESH
+	$('span#time').on('click', connect)
 
 	// PLAY BUTTON
 	$('a#playback').on('click', e => {

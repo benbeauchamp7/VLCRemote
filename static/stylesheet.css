@@ -72,6 +72,16 @@ span.time {
     text-align: center;
 }
 
+span.time.red {
+    border-color: red;
+    color: red;
+}
+
+span.time.black {
+    border-color: black;
+    color: black;
+}
+
 .slidecontainer {
     width: 100%; /* Width of the outside container */
 }
@@ -167,6 +177,10 @@ select {
 
 i {
     color: black;
+}
+
+i#settings-ico {
+    margin-right: 5px;
 }
 
 h1 {
